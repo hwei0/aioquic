@@ -553,9 +553,13 @@ if __name__ == "__main__":
     configuration = QuicConfiguration(
         is_client=True,
         alpn_protocols=H0_ALPN if args.legacy_http else H3_ALPN,
-        congestion_control_algorithm=args.congestion_control_algorithm,
-        max_datagram_size=args.max_datagram_size,
+        #congestion_control_algorithm="fixed",
+        max_data=500_000_000_000,
+        max_stream_data=500_000_000_000,
+        max_datagram_size=1200,
+        max_datagram_frame_size=65536,
     )
+    configuration.verify_mode = ssl.CERT_NONE
     if args.ca_certs:
         configuration.load_verify_locations(args.ca_certs)
     if args.cipher_suites:
@@ -564,26 +568,12 @@ if __name__ == "__main__":
         ]
     if args.insecure:
         configuration.verify_mode = ssl.CERT_NONE
-    if args.max_data:
-        configuration.max_data = args.max_data
-    if args.max_stream_data:
-        configuration.max_stream_data = args.max_stream_data
     if args.negotiate_v2:
         configuration.original_version = QuicProtocolVersion.VERSION_1
         configuration.supported_versions = [
             QuicProtocolVersion.VERSION_2,
             QuicProtocolVersion.VERSION_1,
         ]
-    if args.quic_log:
-        configuration.quic_logger = QuicFileLogger(args.quic_log)
-    if args.secrets_log:
-        configuration.secrets_log_file = open(args.secrets_log, "a")
-    if args.session_ticket:
-        try:
-            with open(args.session_ticket, "rb") as fp:
-                configuration.session_ticket = pickle.load(fp)
-        except FileNotFoundError:
-            pass
 
     # load SSL certificate and key
     if args.certificate is not None:

@@ -593,10 +593,12 @@ if __name__ == "__main__":
 
     configuration = QuicConfiguration(
         alpn_protocols=H3_ALPN + H0_ALPN + ["siduck"],
-        congestion_control_algorithm=args.congestion_control_algorithm,
+        # congestion_control_algorithm="fixed",
         is_client=False,
         max_datagram_frame_size=65536,
-        max_datagram_size=args.max_datagram_size,
+        max_datagram_size=1200,
+        max_data=500_000_000_000,
+        max_stream_data=500_000_000_000,
         quic_logger=quic_logger,
         secrets_log_file=secrets_log_file,
     )

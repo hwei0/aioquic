@@ -29,8 +29,22 @@ async def homepage(request):
     """
     await request.send_push_promise("/style.css")
     return templates.TemplateResponse("index.html", {"request": request})
+from random import randbytes
 
-
+content = randbytes(10000000)
+async def files(request):
+    """
+    Returns the file under htdocs/files.
+    """
+    print("HELLO")
+    #file_path = os.path.join(STATIC_ROOT, "files", request.path_params["file"])
+    #if not os.path.exists(file_path):
+    #    print("A")
+    #    content = '1234567890'*1000000 
+    #with open(file_path, "rb") as file:
+    #    print("B")
+    #    content = file.read()
+    return Response(content, media_type="application/octet-stream")
 async def echo(request):
     """
     HTTP echo endpoint.
@@ -133,6 +147,7 @@ starlette = Starlette(
         Route("/{size:int}", padding),
         Route("/echo", echo, methods=["POST"]),
         Route("/logs", logs),
+        Route("/files", files),
         WebSocketRoute("/ws", ws),
         Mount(STATIC_URL, StaticFiles(directory=STATIC_ROOT, html=True)),
     ]
